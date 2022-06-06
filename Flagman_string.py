@@ -100,35 +100,35 @@ if __name__=='__main__':
                     LCD.text("Answer the Directions!", 30, 20, LCD.red)
                     LCD.text(keyname[answer], 100, 65, LCD.black)
                     for j in range(len(answer_list)):
-                        LCD.text(keyname[answer_list[j]], 48*j, 95+(j//5)*16, LCD.black)
+                        LCD.text(keyname[answer_list[j]], 48*(j%5), 95+(j//5)*12, LCD.black)
                     LCD.lcd_show()
                 keyinput.ReadAll()
         
             LCD.fill(LCD.white)
             LCD.lcd_show()
-            time.sleep(2)
+            time.sleep(1)
             for i in range(len(number_list)):
-                LCD.text(keyname[number_list[i]], 48*(i%5), 20+(i//5)*16, LCD.black)
-                LCD.text(keyname[answer_list[i]], 48*(i%5), 80+(i//5)*16, LCD.black)
+                LCD.text(keyname[number_list[i]], 48*(i%5), 20+(i//5)*12, LCD.black)
+                LCD.text(keyname[answer_list[i]], 48*(i%5), 80+(i//5)*12, LCD.black)
                 LCD.lcd_show()
                 if number_list[i] != answer_list[i]:
                     all_correct = False
-                time.sleep(2)
+                time.sleep(1)
         
             if all_correct:
                 LCD.fill(LCD.green)
                 for i in range(len(number_list)):
-                    LCD.text(keyname[number_list[i]], 48*(i%5), 20+(i//5)*16, LCD.black)
-                    LCD.text(keyname[answer_list[i]], 48*(i%5), 80+(i//5)*16, LCD.black)
+                    LCD.text(keyname[number_list[i]], 48*(i%5), 20+(i//5)*12, LCD.black)
+                    LCD.text(keyname[answer_list[i]], 48*(i%5), 80+(i//5)*12, LCD.black)
                 LCD.lcd_show()
             else:
                 LCD.fill(LCD.red)
                 for i in range(len(number_list)):
-                    LCD.text(keyname[number_list[i]], 48*(i%5), 20+(i//5)*16, LCD.black)
-                    LCD.text(keyname[answer_list[i]], 48*(i%5), 80+(i//5)*16, LCD.black)
+                    LCD.text(keyname[number_list[i]], 48*(i%5), 20+(i//5)*12, LCD.black)
+                    LCD.text(keyname[answer_list[i]], 48*(i%5), 80+(i//5)*12, LCD.black)
                 LCD.lcd_show()
             
-            time.sleep(2)
+            time.sleep_us(1250000)
         
         LCD.fill(LCD.white)
         LCD.text("Record: "+str(len(number_list)-1),70,65,LCD.red)
