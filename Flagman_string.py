@@ -1,5 +1,7 @@
 import Lcd1_14driver
 from KeyInput import ExPin, KeyInput
+from ImageBuf import ImageBuf
+from ImageData import poyo_walk0_24_24, poyo_cro4_24_24
 from machine import Pin,PWM
 import time
 import random
@@ -17,6 +19,9 @@ keyB = ExPin(17,Pin.IN,Pin.PULL_UP)
 
 keyinput = KeyInput(joyUp, joyDown, joyLeft, joyRight, joySel, keyA, keyB)
 
+poyo_walk0 = ImageBuf(24, 24, poyo_walk0_24_24)
+poyo_cro4 = ImageBuf(24, 24, poyo_cro4_24_24)
+
 BL = 13   # lcd back light pin declaration
 
 # color parameters are set for RGB565
@@ -32,12 +37,9 @@ if __name__=='__main__':
     while(1):
         
         LCD.fill(LCD.white)
-        LCD.text("FLAGMAN",90,65,LCD.red)
-    
-        #LCD.hline(10,10,220,LCD.blue)
-        #LCD.hline(10,125,220,LCD.blue)
-        #LCD.vline(10,10,115,LCD.blue)
-        #LCD.vline(230,10,115,LCD.blue)
+        LCD.text("FLAGMAN", 90, 65, LCD.red)
+        LCD.blit(poyo_walk0, 55, 55, 0xffff)
+        LCD.blit(poyo_cro4, 155, 56, 0xffff)
     
         LCD.rect(10, 10, 220, 115, LCD.blue)
     
@@ -45,13 +47,12 @@ if __name__=='__main__':
         
         number_list = []
     
-        keyinput.ReadAll()
         while(1):
+            keyinput.ReadAll()
+            time.sleep_us(16666)
             if keyinput.OnButtonDown(keyinput.A):
                 keyinput.ReadAll()
                 break
-            keyinput.ReadAll()
-            time.sleep_us(16666)
     
         all_correct = True
         while(all_correct):
@@ -135,11 +136,10 @@ if __name__=='__main__':
         LCD.rect(10, 10, 220, 115, LCD.blue)
         LCD.lcd_show()
         
-        keyinput.ReadAll()
         while(1):
+            keyinput.ReadAll()
+            time.sleep_us(16666)
             if keyinput.OnButtonDown(keyinput.A):
                 keyinput.ReadAll()
                 break
-            keyinput.ReadAll()
-            time.sleep_us(16666)
         #LCD.fill(0xFFFF)
