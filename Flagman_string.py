@@ -1,7 +1,7 @@
 import Lcd1_14driver
 from KeyInput import ExPin, KeyInput
 from ImageBuf import ImageBuf
-from ImageData import poyo_walk0_24_24, poyo_cro4_24_24
+from ImageData import poyo_walk0_24_24, poyo_cro4_24_24, iyami_body_32_80, iyami_hand_left_27_12
 from machine import Pin,PWM
 import time
 import random
@@ -21,6 +21,9 @@ keyinput = KeyInput(joyUp, joyDown, joyLeft, joyRight, joySel, keyA, keyB)
 
 poyo_walk0 = ImageBuf(24, 24, poyo_walk0_24_24)
 poyo_cro4 = ImageBuf(24, 24, poyo_cro4_24_24)
+
+iyami_body = ImageBuf(32, 80, iyami_body_32_80)
+iyami_hand_left = ImageBuf(27, 12, iyami_hand_left_27_12)
 
 BL = 13   # lcd back light pin declaration
 

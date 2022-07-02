@@ -1,5 +1,5 @@
 // This program is originally from http://picceri.blogspot.com/2018/05/24bitbmprgb565binctxt-7-1_31.html by iwasan1936
-// I added mode 8 & 9, recolor and pytxt.
+// I added mode 8 & 9, replace and pytxt.
 
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
@@ -54,7 +54,7 @@ public:
 unsigned int convert_bmp_to_bin(ofstream &of , ifstream& inf , BMP& bmp);
 unsigned int press_bin_to_bin(ofstream &of , ifstream& inf);
 void bin_to_txt(ifstream& inf, ofstream& of ,unsigned int n);
-unsigned int recolor_convert_bmp_to_bin(ofstream &of , ifstream& inf , BMP& bmp);
+unsigned int replace_convert_bmp_to_bin(ofstream &of , ifstream& inf , BMP& bmp);
 void bin_to_pytxt(ifstream& inf, ofstream& of);
 
 int main(){
@@ -74,7 +74,6 @@ int main(){
   cout << "6: Compress and Output txt as C array from bin file . \n";
   cout << "7: Compress bin file and output to bin file. \n";
   cout << "8: Output converted RGB565 bin file from 24bit BMP as Python bytearray. \n";
-  cout << "9: Recolor and output converted RGB565 bin file from 24bit BMP as Python bytearray. \n";
   cout << "Mode : ";
   cin >> mode;
 
@@ -82,7 +81,7 @@ int main(){
     cout << "Enter the bin file name : ";
     cin >> of_name;
   }
-  if(mode == 1 || mode == 2 || mode == 3 || mode == 4 || mode == 8){
+  if(mode == 1 || mode == 2 || mode == 3 || mode == 4){
     cout << "Enter the BMP file name : ";
     cin >> if_name;
     inf.open(if_name ,ios::binary);
@@ -102,7 +101,7 @@ int main(){
     inf.close();
     of.close();
   }
-  if(mode == 9){
+  if(mode == 8){
     cout << "Enter the BMP file name : ";
     cin >> if_name;
     inf.open(if_name ,ios::binary);
@@ -118,7 +117,7 @@ int main(){
     if(of.fail()){
       cout << "Could not make bin file. \n";
     }
-    cout << recolor_convert_bmp_to_bin(of,inf,bmp) << endl;
+    cout << replace_convert_bmp_to_bin(of,inf,bmp) << endl;
     inf.close();
     of.close();
   }
@@ -157,7 +156,7 @@ int main(){
     inf.close();
     of.close();
   }
-  if(mode == 8 || mode == 9){
+  if(mode == 8){
     inf.open(of_name ,ios::binary);
     if(inf.fail()){
       cout << "Could not open bin \n";
@@ -297,7 +296,7 @@ void bin_to_txt(ifstream& inf, ofstream& of ,unsigned int n){
 }
 
 
-unsigned int recolor_convert_bmp_to_bin(ofstream &of , ifstream& inf , BMP& bmp){
+unsigned int replace_convert_bmp_to_bin(ofstream &of , ifstream& inf , BMP& bmp){
   unsigned char buf[10];
   unsigned int bytes = 0;
   inf.seekg(bmp.offset , ios_base::beg);
@@ -312,20 +311,28 @@ unsigned int recolor_convert_bmp_to_bin(ofstream &of , ifstream& inf , BMP& bmp)
       //unsigned short buf[5];
       inf.read((char*)buf,3);
 
+      /*
       r = buf[2] >> 2;
       g = buf[1] >> 3;
       b = buf[0] >> 3;
 
-      tmp = (r << 5) + g;
-      //tmp = ((buf[1] << 5) & 0b11100000) + ((buf[0] >> 3) & 0b11111);
-      //tmp = ((buf[1] & 0b111) << 5) + ((buf[0] >> 3) & 0b11111);
-      of.write((char*)&tmp,1);
-
-
       tmp = (b << 3) + (r >> 3);
-      //tmp = ((buf[2] << 3) & 0b11111000) + ((buf[1] >> 5) & 0b111);
-      //tmp = ((buf[2] & 0b11111) << 3) + ((buf[1] >> 5) & 0b111);
-      of.write((char*)&tmp,1);
+      of.write((char*)&tmp, 1);
+
+      tmp = ((r & 0b111) << 5) + g;
+      of.write((char*)&tmp, 1);
+      */
+
+      r = buf[2] >> 3;
+      g = buf[1] >> 2;
+      b = buf[0] >> 3;
+
+      tmp = (r << 3) + (g >> 3);
+      of.write((char*)&tmp, 1);
+
+      tmp = ((g & 0b111) << 5) + b;
+      of.write((char*)&tmp, 1);
+
       bytes += 2;
     }
     inf.seekg(bmp.fourmod, ios_base::cur);
