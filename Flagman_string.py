@@ -31,6 +31,7 @@ poyo_cro4 = ImageBuf(24, 24, poyo_cro4_24_24)
 #------other declaration----- 
 
 exit_game = False
+keyname = ("UP", "DOWN", "LEFT", "RIGHT")
 
 # color parameters are set for RGB565
 # B (higher 5bit) R (middle 6bit) G (lower 5bit)
@@ -39,8 +40,6 @@ if __name__=='__main__':
     pwm = PWM(Pin(BL))
     pwm.freq(100)
     pwm.duty_u16(32768)    #max value is 65535
-    
-    keyname = ["UP", "DOWN", "LEFT", "RIGHT"]
     
     while(not exit_game):
         

@@ -1,4 +1,4 @@
-left	1	29
-right	22	29
 up	22	12
 down	22	31
+left	1	29
+right	22	29

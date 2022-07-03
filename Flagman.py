@@ -1,9 +1,9 @@
-# Flagman_string.py ver. 1.0.0
+# Flagman.py ver. 1.0.0
 
 import Lcd1_14driver
 from KeyInput import ExPin, KeyInput
 from ImageBuf import ImageBuf
-from ImageData import poyo_walk0_24_24, poyo_cro4_24_24, iyami_body_32_80, iyami_hand_left_27_12
+from ImageData import iyami_body_32_80, iyami_hand_up_15_25, iyami_hand_down_15_25, iyami_hand_left_27_12, iyami_hand_right_26_8
 from machine import Pin,PWM
 import time
 import random
@@ -25,15 +25,19 @@ BL = 13   # lcd back light pin declaration
 
 #------image buffer declaration----- 
 
-poyo_walk0 = ImageBuf(24, 24, poyo_walk0_24_24)
-poyo_cro4 = ImageBuf(24, 24, poyo_cro4_24_24)
+iyami_body = ImageBuf(32, 80, iyami_body_32_80)
+iyami_hand_up = ImageBuf(15, 25, iyami_hand_up_15_25)
+iyami_hand_down = ImageBuf(15, 25, iyami_hand_down_15_25)
+iyami_hand_left = ImageBuf(27, 12, iyami_hand_left_27_12)
+iyami_hand_right = ImageBuf(26, 8, iyami_hand_right_26_8)
 
-#iyami_body = ImageBuf(32, 80, iyami_body_32_80)
-#iyami_hand_left = ImageBuf(27, 12, iyami_hand_left_27_12)
+iyami_hand = (iyami_hand_up, iyami_hand_down, iyami_hand_left, iyami_hand_right)
+iyami_hand_offset = ((22, 12), (22, 31), (1, 29), (22, 29))
 
 #------other declaration----- 
 
 exit_game = False
+keyname = ("UP", "DOWN", "LEFT", "RIGHT")
 
 # color parameters are set for RGB565
 # B (higher 5bit) R (middle 6bit) G (lower 5bit)
@@ -43,29 +47,35 @@ if __name__=='__main__':
     pwm.freq(100)
     pwm.duty_u16(32768)    #max value is 65535
     
-    keyname = ["UP", "DOWN", "LEFT", "RIGHT"]
-    
     while(not exit_game):
         
-        LCD.fill(LCD.white)
-        LCD.text("FLAGMAN", 90, 65, LCD.red)
-        LCD.blit(poyo_walk0, 55, 55, 0xffff)
-        LCD.blit(poyo_cro4, 155, 56, 0xffff)
-    
-        LCD.rect(10, 10, 220, 115, LCD.blue)
-    
-        LCD.lcd_show()
-        
-        number_list = []
-    
+        title_n = 2
         while(1):
-            keyinput.ReadAll()
-            time.sleep_us(16666)
-            if keyinput.GetKeyDown(keyinput.A):
+            if keyinput.GetKeyDown(keyinput.up):
+                title_n = 0
+            elif keyinput.GetKeyDown(keyinput.down):
+                title_n = 1
+            elif keyinput.GetKeyDown(keyinput.left):
+                title_n = 2
+            elif keyinput.GetKeyDown(keyinput.right):
+                title_n = 3
+            elif keyinput.GetKeyDown(keyinput.A):
                 break
             if keyinput.GetKeyDown(keyinput.B):
                 exit_game = True
                 break
+            keyinput.ReadAll()
+            
+            LCD.fill(LCD.white)
+            LCD.text("FLAGMAN", 90, 65, LCD.red)
+            LCD.blit(iyami_body, 35, 25, 0xffff)
+            LCD.blit(iyami_hand[title_n], 35 + iyami_hand_offset[title_n][0], 25 + iyami_hand_offset[title_n][1], 0xffff)
+            LCD.blit(iyami_body, 170, 25, 0xffff)
+            LCD.blit(iyami_hand[title_n], 170 + iyami_hand_offset[title_n][0], 25 + iyami_hand_offset[title_n][1], 0xffff)
+            LCD.rect(10, 10, 220, 115, LCD.blue)
+            LCD.lcd_show()
+        
+        number_list = []
             
         if exit_game:
             LCD.fill(LCD.black)
@@ -91,16 +101,18 @@ if __name__=='__main__':
         
             for x in number_list:
                 LCD.fill(LCD.black)
-                LCD.text(keyname[x], 100, 65, LCD.white)
+                LCD.fill_rect(42, 12, 160, 96, LCD.white)
+                LCD.blit(iyami_body, 105, 20, 0xffff)
+                LCD.blit(iyami_hand[x], 105 + iyami_hand_offset[x][0], 20 + iyami_hand_offset[x][1], 0xffff)
                 LCD.lcd_show()
-                time.sleep(1)
+                time.sleep_us(500000)
                 LCD.fill(LCD.blue)
                 LCD.lcd_show()
         
             answer_list = []
             i=0
             while i < len(number_list):
-                answer = 0
+                answer = 2
                 while(1):
                     if keyinput.GetKeyDown(keyinput.up):
                         answer = 0
@@ -121,35 +133,42 @@ if __name__=='__main__':
                         break
                     keyinput.ReadAll()
                     LCD.fill(LCD.white)
-                    LCD.text("Answer the Directions!", 30, 20, LCD.red)
-                    LCD.text(keyname[answer], 100, 65, LCD.black)
+                    LCD.text("Answer the Directions!", 30, 15, LCD.red)
+                    LCD.blit(iyami_body, 105, 20, 0xffff)
+                    LCD.blit(iyami_hand[answer], 105 + iyami_hand_offset[answer][0], 20 + iyami_hand_offset[answer][1], 0xffff)
                     for j in range(len(answer_list)):
-                        LCD.text(keyname[answer_list[j]], 48*(j%5), 95+(j//5)*12, LCD.black)
+                        LCD.text(keyname[answer_list[j]], 48*(j%5), 100+(j//5)*12, LCD.black)
                     LCD.lcd_show()
                 keyinput.ReadAll()
         
             LCD.fill(LCD.white)
             LCD.lcd_show()
             time.sleep(1)
+            
             for i in range(len(number_list)):
-                LCD.text(keyname[number_list[i]], 48*(i%5), 20+(i//5)*12, LCD.black)
-                LCD.text(keyname[answer_list[i]], 48*(i%5), 80+(i//5)*12, LCD.black)
+                LCD.fill(LCD.white)
+                LCD.blit(iyami_body, 55, 25, 0xffff)
+                LCD.blit(iyami_hand[number_list[i]], 55 + iyami_hand_offset[number_list[i]][0], 25 + iyami_hand_offset[number_list[i]][1], 0xffff)
+                LCD.blit(iyami_body, 150, 25, 0xffff)
+                LCD.blit(iyami_hand[answer_list[i]], 150 + iyami_hand_offset[answer_list[i]][0], 25 + iyami_hand_offset[answer_list[i]][1], 0xffff)
                 LCD.lcd_show()
                 if number_list[i] != answer_list[i]:
                     all_correct = False
-                time.sleep(1)
-        
+                time.sleep_us(500000)
+            
             if all_correct:
                 LCD.fill(LCD.green)
-                for i in range(len(number_list)):
-                    LCD.text(keyname[number_list[i]], 48*(i%5), 20+(i//5)*12, LCD.black)
-                    LCD.text(keyname[answer_list[i]], 48*(i%5), 80+(i//5)*12, LCD.black)
+                LCD.blit(iyami_body, 55, 25, 0xffff)
+                LCD.blit(iyami_hand[number_list[i]], 55 + iyami_hand_offset[number_list[i]][0], 25 + iyami_hand_offset[number_list[i]][1], 0xffff)
+                LCD.blit(iyami_body, 150, 25, 0xffff)
+                LCD.blit(iyami_hand[answer_list[i]], 150 + iyami_hand_offset[answer_list[i]][0], 25 + iyami_hand_offset[answer_list[i]][1], 0xffff)
                 LCD.lcd_show()
             else:
                 LCD.fill(LCD.red)
-                for i in range(len(number_list)):
-                    LCD.text(keyname[number_list[i]], 48*(i%5), 20+(i//5)*12, LCD.black)
-                    LCD.text(keyname[answer_list[i]], 48*(i%5), 80+(i//5)*12, LCD.black)
+                LCD.blit(iyami_body, 55, 25, 0xffff)
+                LCD.blit(iyami_hand[number_list[i]], 55 + iyami_hand_offset[number_list[i]][0], 25 + iyami_hand_offset[number_list[i]][1], 0xffff)
+                LCD.blit(iyami_body, 150, 25, 0xffff)
+                LCD.blit(iyami_hand[answer_list[i]], 150 + iyami_hand_offset[answer_list[i]][0], 25 + iyami_hand_offset[answer_list[i]][1], 0xffff)
                 LCD.lcd_show()
             
             time.sleep_us(1250000)
@@ -159,7 +178,7 @@ if __name__=='__main__':
         LCD.fill(LCD.white)
         if record >= 25:
             LCD.text("You are Memory Master!", 30, 32, LCD.red)
-        LCD.text("Record: "+str(record), 70, 65, LCD.black)
+        LCD.text("Record: " + str(record), 70, 65, LCD.black)
         LCD.rect(10, 10, 220, 115, LCD.blue)
         LCD.lcd_show()
         
