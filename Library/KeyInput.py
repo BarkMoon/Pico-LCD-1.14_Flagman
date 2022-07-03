@@ -26,8 +26,26 @@ class KeyInput():
         self.A.last_value = self.A.value()
         self.B.last_value = self.B.value()
         
-    def OnButtonDown(self, Button):
-        if Button.last_value == Button.OFF_VALUE and Button.value() == Button.ON_VALUE:
+    # previous name is OnButtonDown
+    # True when the key is pressed
+    def GetKeyDown(self, Key):
+        if Key.last_value == Key.OFF_VALUE and Key.value() == Key.ON_VALUE:
+            Key.last_value = Key.ON_VALUE
+            return True
+        else:
+            return False
+        
+    # True when the key is released
+    def GetKeyUp(self, Key):
+        if Key.last_value == Key.ON_VALUE and Key.value() == Key.OFF_VALUE:
+            Key.last_value = Key.OFF_VALUE
+            return True
+        else:
+            return False
+        
+    # True when the key is being pressed
+    def GetKey(self, Key):
+        if Key.value() == Key.ON_VALUE:
             return True
         else:
             return False

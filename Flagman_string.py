@@ -7,7 +7,7 @@ import time
 import random
 LCD = Lcd1_14driver.Lcd1_14()
 
-#------joystck pin declaration----- 
+#------pin declaration----- 
     
 joyUp = ExPin(2 ,Pin.IN,Pin.PULL_UP) 
 joyDown= ExPin(18 ,Pin.IN,Pin.PULL_UP)
@@ -19,13 +19,20 @@ keyB = ExPin(17,Pin.IN,Pin.PULL_UP)
 
 keyinput = KeyInput(joyUp, joyDown, joyLeft, joyRight, joySel, keyA, keyB)
 
+BL = 13   # lcd back light pin declaration
+
+#------image buffer declaration----- 
+
 poyo_walk0 = ImageBuf(24, 24, poyo_walk0_24_24)
 poyo_cro4 = ImageBuf(24, 24, poyo_cro4_24_24)
 
-iyami_body = ImageBuf(32, 80, iyami_body_32_80)
-iyami_hand_left = ImageBuf(27, 12, iyami_hand_left_27_12)
+#iyami_body = ImageBuf(32, 80, iyami_body_32_80)
+#iyami_hand_left = ImageBuf(27, 12, iyami_hand_left_27_12)
 
-BL = 13   # lcd back light pin declaration
+#------other declaration----- 
+
+exit_game = False
+
 
 # color parameters are set for RGB565
 # B (higher 5bit) R (middle 6bit) G (lower 5bit)
@@ -37,7 +44,7 @@ if __name__=='__main__':
     
     keyname = ["UP", "DOWN", "LEFT", "RIGHT"]
     
-    while(1):
+    while(not exit_game):
         
         LCD.fill(LCD.white)
         LCD.text("FLAGMAN", 90, 65, LCD.red)
@@ -53,9 +60,21 @@ if __name__=='__main__':
         while(1):
             keyinput.ReadAll()
             time.sleep_us(16666)
-            if keyinput.OnButtonDown(keyinput.A):
-                keyinput.ReadAll()
+            if keyinput.GetKeyDown(keyinput.A):
                 break
+            if keyinput.GetKeyDown(keyinput.B):
+                exit_game = True
+                break
+            
+        if exit_game:
+            LCD.fill(LCD.black)
+            LCD.rect(10, 10, 220, 115, LCD.blue)
+            LCD.text("SEE YOU NEXT GAME!", 50, 65, LCD.white)
+            LCD.lcd_show()
+            time.sleep_us(2000000)
+            LCD.fill(LCD.black)
+            LCD.lcd_show()
+            continue
     
         all_correct = True
         while(all_correct):
@@ -82,20 +101,20 @@ if __name__=='__main__':
             while i < len(number_list):
                 answer = 0
                 while(1):
-                    if keyinput.OnButtonDown(keyinput.up):
+                    if keyinput.GetKeyDown(keyinput.up):
                         answer = 0
-                    elif keyinput.OnButtonDown(keyinput.down):
+                    elif keyinput.GetKeyDown(keyinput.down):
                         answer = 1
-                    elif keyinput.OnButtonDown(keyinput.left):
+                    elif keyinput.GetKeyDown(keyinput.left):
                         answer = 2
-                    elif keyinput.OnButtonDown(keyinput.right):
+                    elif keyinput.GetKeyDown(keyinput.right):
                         answer = 3
-                    elif keyinput.OnButtonDown(keyinput.B):
+                    elif keyinput.GetKeyDown(keyinput.B):
                         if i > 0:
                             answer_list.pop(i-1)
                             i -= 1
                             break
-                    elif keyinput.OnButtonDown(keyinput.A):
+                    elif keyinput.GetKeyDown(keyinput.A):
                         answer_list.append(answer)
                         i += 1
                         break
@@ -142,7 +161,6 @@ if __name__=='__main__':
         while(1):
             keyinput.ReadAll()
             time.sleep_us(16666)
-            if keyinput.OnButtonDown(keyinput.A):
-                keyinput.ReadAll()
+            if keyinput.GetKeyDown(keyinput.A):
                 break
         #LCD.fill(0xFFFF)
