@@ -1,3 +1,5 @@
+# Flagman_string.py ver. 1.0.0
+
 import Lcd1_14driver
 from KeyInput import ExPin, KeyInput
 from ImageBuf import ImageBuf
@@ -153,8 +155,12 @@ if __name__=='__main__':
             
             time.sleep_us(1250000)
         
+        record = len(number_list)-1
+        
         LCD.fill(LCD.white)
-        LCD.text("Record: "+str(len(number_list)-1),70,65,LCD.red)
+        if record >= 25:
+            LCD.text("You are Memory Master!", 30, 32, LCD.red)
+        LCD.text("Record: "+str(record), 70, 65, LCD.black)
         LCD.rect(10, 10, 220, 115, LCD.blue)
         LCD.lcd_show()
         
